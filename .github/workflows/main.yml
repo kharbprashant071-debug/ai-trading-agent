@@ -18,61 +18,28 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Locate repository files
-        shell: bash
+      - name: Check repository files
         run: |
-          set -e
+          echo "Workspace:"
+          pwd
 
-          echo "GitHub workspace:"
-          echo "$GITHUB_WORKSPACE"
+          echo "Files:"
+          ls -la
 
-          echo ""
-          echo "Repository files:"
-          find "$GITHUB_WORKSPACE" -maxdepth 3 -type f -print
-
-          echo ""
-          echo "Searching for requirements.txt..."
-
-          REQUIREMENTS_FILE=$(find "$GITHUB_WORKSPACE" -type f -name "requirements.txt" -print -quit)
-
-          if [ -z "$REQUIREMENTS_FILE" ]; then
-            echo "ERROR: requirements.txt was not found."
-            exit 1
-          fi
-
-          echo "Found requirements.txt:"
-          echo "$REQUIREMENTS_FILE"
-
-          echo "REQUIREMENTS_FILE=$REQUIREMENTS_FILE" >> "$GITHUB_ENV"
+          echo "Checking requirements.txt:"
+          ls -l "$GITHUB_WORKSPACE/requirements.txt"
 
       - name: Install dependencies
-        shell: bash
         run: |
-          set -e
-
           python -m pip install --upgrade pip
-
-          echo "Installing from:"
-          echo "$REQUIREMENTS_FILE"
-
-          python -m pip install -r "$REQUIREMENTS_FILE"
+          python -m pip install -r "$GITHUB_WORKSPACE/requirements.txt"
 
       - name: Run wallet monitor
-        shell: bash
         run: |
-          set -e
-
-          echo "Running wallet monitor..."
-
           python "$GITHUB_WORKSPACE/wallet_monitor.py"
 
       - name: Run paper trader
-        shell: bash
         run: |
-          set -e
-
-          echo "Running paper trader..."
-
           python "$GITHUB_WORKSPACE/paper_trader.py"
 
       - name: Complete
