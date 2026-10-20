@@ -10,72 +10,49 @@ jobs:
     runs-on: ubuntu-24.04
 
     steps:
-      # 1. Checkout repository
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. Setup Python
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-          cache: "pip"
-          cache-dependency-path: "**/requirements.txt"
 
-      # 3. Check repository files
       - name: Check repository files
         shell: bash
         run: |
           set -e
 
-          echo "===================================="
-          echo "Current directory:"
+          echo "======================================"
+          echo "CURRENT DIRECTORY"
+          echo "======================================"
+
           pwd
-          echo "===================================="
+          echo ""
 
-          echo "GitHub workspace:"
-          echo "$GITHUB_WORKSPACE"
-          echo "===================================="
+          echo "======================================"
+          echo "REPOSITORY FILES"
+          echo "======================================"
 
-          echo "Repository files:"
-          find "$GITHUB_WORKSPACE" -maxdepth 3 -type f -print
-          echo "===================================="
+          ls -la
 
-          echo "Searching for requirements.txt..."
+          echo ""
 
-          REQ_FILE=$(find "$GITHUB_WORKSPACE" \
-            -type f \
-            -iname "requirements.txt" \
-            -print -quit)
+          echo "======================================"
+          echo "CHECKING REQUIRED FILES"
+          echo "======================================"
 
-          if [ -z "$REQ_FILE" ]; then
-            echo "ERROR: requirements.txt was NOT found."
-            exit 1
-          fi
+          test -f "$GITHUB_WORKSPACE/requirements.txt"
+          test -f "$GITHUB_WORKSPACE/wallet_monitor.py"
+          test -f "$GITHUB_WORKSPACE/paper_trader.py"
+          test -f "$GITHUB_WORKSPACE/config.py"
 
-          echo "Found requirements file:"
-          echo "$REQ_FILE"
+          echo "requirements.txt FOUND"
+          echo "wallet_monitor.py FOUND"
+          echo "paper_trader.py FOUND"
+          echo "config.py FOUND"
 
-          echo "Checking Python files..."
-
-          if [ ! -f "$GITHUB_WORKSPACE/wallet_monitor.py" ]; then
-            echo "ERROR: wallet_monitor.py not found."
-            exit 1
-          fi
-
-          if [ ! -f "$GITHUB_WORKSPACE/paper_trader.py" ]; then
-            echo "ERROR: paper_trader.py not found."
-            exit 1
-          fi
-
-          if [ ! -f "$GITHUB_WORKSPACE/config.py" ]; then
-            echo "ERROR: config.py not found."
-            exit 1
-          fi
-
-          echo "All required files found."
-
-      # 4. Install dependencies
       - name: Install dependencies
         shell: bash
         run: |
@@ -86,17 +63,9 @@ jobs:
 
           python -m pip install --upgrade pip
 
-          REQ_FILE=$(find "$GITHUB_WORKSPACE" \
-            -type f \
-            -iname "requirements.txt" \
-            -print -quit)
+          python -m pip install \
+            -r "$GITHUB_WORKSPACE/requirements.txt"
 
-          echo "Installing from:"
-          echo "$REQ_FILE"
-
-          python -m pip install -r "$REQ_FILE"
-
-      # 5. Run wallet monitor
       - name: Run wallet monitor
         shell: bash
         run: |
@@ -104,10 +73,9 @@ jobs:
 
           cd "$GITHUB_WORKSPACE"
 
-          echo "Running wallet monitor..."
+          echo "Starting wallet monitor..."
           python wallet_monitor.py
 
-      # 6. Run paper trader
       - name: Run paper trader
         shell: bash
         run: |
@@ -115,13 +83,12 @@ jobs:
 
           cd "$GITHUB_WORKSPACE"
 
-          echo "Running paper trader..."
+          echo "Starting paper trader..."
           python paper_trader.py
 
-      # 7. Finish
       - name: Complete
         shell: bash
         run: |
-          echo "===================================="
-          echo "AI Trading Agent completed."
-          echo "===================================="
+          echo "======================================"
+          echo "AI TRADING AGENT COMPLETED"
+          echo "======================================"
