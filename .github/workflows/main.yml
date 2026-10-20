@@ -17,18 +17,32 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: requirements.txt
+
+      - name: Check repository files
+        run: |
+          echo "Current directory:"
+          pwd
+
+          echo "Repository files:"
+          ls -la
+
+          echo "GitHub workspace:"
+          echo "$GITHUB_WORKSPACE"
+
+          echo "Checking requirements.txt:"
+          test -f "$GITHUB_WORKSPACE/requirements.txt"
 
       - name: Install dependencies
         run: |
-          pwd
-          ls -la
           python -m pip install --upgrade pip
-          python -m pip install -r requirements.txt
+          python -m pip install -r "$GITHUB_WORKSPACE/requirements.txt"
 
       - name: Run wallet monitor
         run: |
-          python wallet_monitor.py
+          python "$GITHUB_WORKSPACE/wallet_monitor.py"
 
       - name: Run paper trader
         run: |
-          python paper_trader.py
+          python "$GITHUB_WORKSPACE/paper_trader.py"
