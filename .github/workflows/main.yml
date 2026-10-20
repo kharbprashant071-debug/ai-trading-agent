@@ -20,7 +20,10 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install -r requirements.txt
+          pwd
+          ls -la
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
 
       - name: Run wallet monitor
         run: |
