@@ -18,32 +18,40 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Check repository files
+      - name: Verify repository
         run: |
-          echo "Workspace:"
+          echo "Current directory:"
           pwd
 
-          echo "Files:"
+          echo "Repository files:"
           ls -la
 
-          echo "Checking requirements.txt:"
-          ls -l "$GITHUB_WORKSPACE/requirements.txt"
+          echo "Git tracked files:"
+          git ls-files
+
+          echo "Requirements file from Git:"
+          git show HEAD:requirements.txt
 
       - name: Install dependencies
         run: |
+          set -e
+
+          git show HEAD:requirements.txt > /tmp/requirements.txt
+
+          echo "Installing:"
+          cat /tmp/requirements.txt
+
           python -m pip install --upgrade pip
-          python -m pip install -r "$GITHUB_WORKSPACE/requirements.txt"
+          python -m pip install -r /tmp/requirements.txt
 
       - name: Run wallet monitor
         run: |
-          python "$GITHUB_WORKSPACE/wallet_monitor.py"
+          python wallet_monitor.py
 
       - name: Run paper trader
         run: |
-          python "$GITHUB_WORKSPACE/paper_trader.py"
+          python paper_trader.py
 
       - name: Complete
         run: |
-          echo "================================"
           echo "AI TRADING AGENT COMPLETED"
-          echo "================================"
