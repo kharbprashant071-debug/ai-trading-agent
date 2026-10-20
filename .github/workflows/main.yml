@@ -7,10 +7,9 @@ on:
 
 jobs:
   trading-agent:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
 
     steps:
-
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -20,75 +19,45 @@ jobs:
           python-version: "3.11"
 
       - name: Check repository files
-        shell: bash
         run: |
-          set -e
-
-          echo "======================================"
+          echo "================================"
           echo "CURRENT DIRECTORY"
-          echo "======================================"
-
+          echo "================================"
           pwd
+
           echo ""
-
-          echo "======================================"
+          echo "================================"
           echo "REPOSITORY FILES"
-          echo "======================================"
-
+          echo "================================"
           ls -la
 
           echo ""
-
-          echo "======================================"
+          echo "================================"
           echo "CHECKING REQUIRED FILES"
-          echo "======================================"
+          echo "================================"
 
-          test -f "$GITHUB_WORKSPACE/requirements.txt"
-          test -f "$GITHUB_WORKSPACE/wallet_monitor.py"
-          test -f "$GITHUB_WORKSPACE/paper_trader.py"
-          test -f "$GITHUB_WORKSPACE/config.py"
+          test -f requirements.txt
+          test -f wallet_monitor.py
+          test -f paper_trader.py
+          test -f config.py
 
-          echo "requirements.txt FOUND"
-          echo "wallet_monitor.py FOUND"
-          echo "paper_trader.py FOUND"
-          echo "config.py FOUND"
+          echo "All required files found."
 
       - name: Install dependencies
-        shell: bash
         run: |
-          set -e
-
-          python --version
-          python -m pip --version
-
           python -m pip install --upgrade pip
-
-          python -m pip install \
-            -r "$GITHUB_WORKSPACE/requirements.txt"
+          python -m pip install -r requirements.txt
 
       - name: Run wallet monitor
-        shell: bash
         run: |
-          set -e
-
-          cd "$GITHUB_WORKSPACE"
-
-          echo "Starting wallet monitor..."
           python wallet_monitor.py
 
       - name: Run paper trader
-        shell: bash
         run: |
-          set -e
-
-          cd "$GITHUB_WORKSPACE"
-
-          echo "Starting paper trader..."
           python paper_trader.py
 
       - name: Complete
-        shell: bash
         run: |
-          echo "======================================"
+          echo "================================"
           echo "AI TRADING AGENT COMPLETED"
-          echo "======================================"
+          echo "================================"
